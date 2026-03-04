@@ -17,6 +17,7 @@
  * @license https://github.com/serbanghita/Mobile-Detect/blob/master/LICENSE
  * @author  Serban Ghita <serbanghita@gmail.com> (since 2012)
  * @author  Nick Ilyin <nick.ilyin@gmail.com>
+ *
  * @author: Victor Stanciu <vic.stanciu@gmail.com> (original author)
  *
  * @version 4.8.10
@@ -278,46 +279,40 @@ class MobileDetect
 
     /**
      * The User-Agent HTTP header is stored in here.
-     * @var string|null
      */
     protected ?string $userAgent = null;
 
     /**
      * HTTP headers in the PHP-flavor. So HTTP_USER_AGENT and SERVER_SOFTWARE.
-     * @var array
      */
     protected array $httpHeaders = [];
 
     /**
      * CloudFront headers. E.g. CloudFront-Is-Desktop-Viewer, CloudFront-Is-Mobile-Viewer & CloudFront-Is-Tablet-Viewer.
-     * @var array
      */
     protected static array $knownCloudFrontHeaders = [
         'HTTP_CLOUDFRONT_IS_MOBILE_VIEWER',
         'HTTP_CLOUDFRONT_IS_TABLET_VIEWER',
-        'HTTP_CLOUDFRONT_IS_DESKTOP_VIEWER'
+        'HTTP_CLOUDFRONT_IS_DESKTOP_VIEWER',
     ];
 
     protected static string $cloudFrontUA = 'Amazon CloudFront';
 
     /**
      * The matching regex string. Used only for debugging.
-     * @var string
      */
-    protected string $matchingRegex = "";
+    protected string $matchingRegex = '';
 
     /**
      * The matches extracted from the regex expression. Used only for debugging.
-     * @var array
      */
     protected array $matchesArray = [];
 
     /**
      * HTTP headers that trigger the 'isMobile' detection to be true.
-     * @var array
      */
     protected static array $knownMobilePositiveHeaders = [
-        'HTTP_ACCEPT'                  => [
+        'HTTP_ACCEPT' => [
             'matches' => [
                 // Opera Mini
                 // @reference: http://dev.opera.com/articles/view/opera-binary-markup-language/
@@ -325,48 +320,47 @@ class MobileDetect
                 // BlackBerry devices.
                 'application/vnd.rim.html',
                 'text/vnd.wap.wml',
-                'application/vnd.wap.xhtml+xml'
+                'application/vnd.wap.xhtml+xml',
             ]],
-        'HTTP_X_WAP_PROFILE'           => null,
-        'HTTP_X_WAP_CLIENTID'          => null,
-        'HTTP_WAP_CONNECTION'          => null,
-        'HTTP_PROFILE'                 => null,
+        'HTTP_X_WAP_PROFILE' => null,
+        'HTTP_X_WAP_CLIENTID' => null,
+        'HTTP_WAP_CONNECTION' => null,
+        'HTTP_PROFILE' => null,
         // Reported by Opera on Nokia devices (e.g. C3).
-        'HTTP_X_OPERAMINI_PHONE_UA'    => null,
-        'HTTP_X_NOKIA_GATEWAY_ID'      => null,
-        'HTTP_X_ORANGE_ID'             => null,
+        'HTTP_X_OPERAMINI_PHONE_UA' => null,
+        'HTTP_X_NOKIA_GATEWAY_ID' => null,
+        'HTTP_X_ORANGE_ID' => null,
         'HTTP_X_VODAFONE_3GPDPCONTEXT' => null,
-        'HTTP_X_HUAWEI_USERID'         => null,
+        'HTTP_X_HUAWEI_USERID' => null,
         // Reported by Windows Smartphones.
-        'HTTP_UA_OS'                   => null,
+        'HTTP_UA_OS' => null,
         // Reported by Verizon, Vodafone proxy system.
-        'HTTP_X_MOBILE_GATEWAY'        => null,
+        'HTTP_X_MOBILE_GATEWAY' => null,
         // Seen this on HTC Sensation. SensationXE_Beats_Z715e.
-        'HTTP_X_ATT_DEVICEID'          => null,
+        'HTTP_X_ATT_DEVICEID' => null,
         // Seen this on a HTC.
-        'HTTP_UA_CPU'                  => ['matches' => ['ARM']],
+        'HTTP_UA_CPU' => ['matches' => ['ARM']],
         // See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-CH-UA-Mobile
         // "?1" means that the device wants a "mobile" experience.
-        'Sec-CH-UA-Mobile'             => ['matches' => ['?1']],
+        'Sec-CH-UA-Mobile' => ['matches' => ['?1']],
     ];
 
     /**
      * List of mobile devices (phones).
-     * @var array
      */
     protected static array $phoneDevices = [
-        'iPhone'        => '\biPhone\b|\biPod\b', // |\biTunes
-        'BlackBerry'    => 'BlackBerry|\bBB10\b|rim[0-9]+|\b(BBA100|BBB100|BBD100|BBE100|BBF100|STH100)\b-[0-9]+',
-        'Pixel'         => '; \bPixel\b',
-        'HTC'           => [
+        'iPhone' => '\biPhone\b|\biPod\b', // |\biTunes
+        'BlackBerry' => 'BlackBerry|\bBB10\b|rim[0-9]+|\b(BBA100|BBB100|BBD100|BBE100|BBF100|STH100)\b-[0-9]+',
+        'Pixel' => '; \bPixel\b',
+        'HTC' => [
             'HTC|HTC.*(Sensation|Evo|Vision|Explorer|6800|8100|8900|A7272|S510e|C110e|Legend|Desire|T8282)',
             'APX515CKT|Qtek9090|APA9292KT|HD_mini|Sensation.*Z710e|PG86100|Z715e|Desire.*(A8181|HD)|ADR6200',
-            'ADR6400L|ADR6425|001HT|Inspire 4G|Android.*\bEVO\b|T-Mobile G1|Z520m|Android [0-9.]+; Pixel'
+            'ADR6400L|ADR6425|001HT|Inspire 4G|Android.*\bEVO\b|T-Mobile G1|Z520m|Android [0-9.]+; Pixel',
         ],
-        'Nexus'         => 'Nexus One|Nexus S|Galaxy.*Nexus|Android.*Nexus.*Mobile|Nexus 4|Nexus 5|Nexus 5X|Nexus 6',
+        'Nexus' => 'Nexus One|Nexus S|Galaxy.*Nexus|Android.*Nexus.*Mobile|Nexus 4|Nexus 5|Nexus 5X|Nexus 6',
         // @todo: Is 'Dell Streak' a tablet or a phone? ;)
-        'Dell'          => 'Dell[;]? (Streak|Aero|Venue|Venue Pro|Flash|Smoke|Mini 3iX)|XCD28|XCD35|\b001DL\b|\b101DL\b|\bGS01\b',
-        'Motorola'      => [
+        'Dell' => 'Dell[;]? (Streak|Aero|Venue|Venue Pro|Flash|Smoke|Mini 3iX)|XCD28|XCD35|\b001DL\b|\b101DL\b|\bGS01\b',
+        'Motorola' => [
             'Motorola|DROIDX|DROID BIONIC|\bDroid\b.*Build|Android.*Xoom|HRI39|MOT-|A1260|A1680|A555|A853|A855|A953|A955',
             'A956|Motorola.*ELECTRIFY|Motorola.*i1|i867|i940|MB200|MB300|MB501|MB502|MB508|MB511|MB520|MB525|MB526|MB611',
             'MB612|MB632|MB810|MB855|MB860|MB861|MB865|MB870|ME501|ME502|ME511|ME525|ME600|ME632|ME722|ME811|ME860|ME863',
@@ -374,7 +368,7 @@ class MobileDetect
             'XT319|XT320|XT390|XT502|XT530|XT531|XT532|XT535|XT603|XT610|XT611|XT615|XT681|XT701|XT702|XT711|XT720|XT800',
             'XT806|XT860|XT862|XT875|XT882|XT883|XT894|XT901|XT907|XT909|XT910|XT912|XT928|XT926|XT915|XT919|XT925|XT1021|\bMoto E\b|XT1068|XT1092|XT1052',
         ],
-        'Samsung'       => [
+        'Samsung' => [
             '\bSamsung\b|SM-G950F|SM-G955F|SM-G9250|GT-19300|SGH-I337|BGT-S5230|GT-B2100|GT-B2700|GT-B2710|GT-B3210|GT-B3310',
             'SM-F946B|SM-A127F',
             'SM-S908E|SM-G955N|SM-S918U1|SM-G998B|SM-G970N|SM-G973U|SM-S901U|SM-A515F|SM-S901E|SM-G980F|SM-S901B',
@@ -429,78 +423,77 @@ class MobileDetect
             'GT-I9205|SM-G9350|SM-J120F|SM-G920F|SM-G920V|SM-G930F|SM-N910C|SM-A310F|GT-I9190|SM-J500FN|SM-G903F|SM-J330F',
             'SM-G610F|SM-G981B|SM-G892A|SM-A530F|SM-G988N|SM-G781B|SM-A805N|SM-G965F',
         ],
-        'LG'            => [
+        'LG' => [
             '\bLG\b;|LG[- ]?(C800|C900|E400|E610|E900|E-900|F160|F180K|F180L|F180S|730|855|L160|LS740|LS840|LS970|LU6200)',
             'LG[- ]?(MS690|MS695|MS770|MS840|MS870|MS910|P500|P700|P705|VM696|AS680|AS695|AX840|C729|E970|GS505|272|C395|E739BK)',
             'LG[- ]?(E960|L55C|L75C|LS696|LS860|P769BK|P350|P500|P509|P870|UN272|US730|VS840|VS950|LN272|LN510|LS670|LS855|LW690)',
             'LG[- ]?(MN270|MN510|P509|P769|P930|UN200|UN270|UN510|UN610|US670|US740|US760|UX265|UX840|VN271|VN530|VS660|VS700|VS740)',
             'LG[- ]?(VS750|VS910|VS920|VS930|VX9200|VX11000|AX840A|LW770|P506|P925|P999|E612|D955|D802|MS323|M257)|LM-G710',
         ],
-        'Sony'          => [
+        'Sony' => [
             'SonyST|SonyLT|SonyEricsson|SonyEricssonLT15iv|LT18i|E10i|LT28h|LT26w|SonyEricssonMT27i',
             'C5303|C6902|C6903|C6906|C6943|D2533|SOV34|601SO|F8332',
         ],
-        'Asus'          => 'Asus.*Galaxy|PadFone.*Mobile|ASUS_Z01QD|ASUS_X00TD',
-        'Xiaomi'        => [
+        'Asus' => 'Asus.*Galaxy|PadFone.*Mobile|ASUS_Z01QD|ASUS_X00TD',
+        'Xiaomi' => [
             '^(?!.*\bx11\b).*xiaomi.*$|POCOPHONE F1|\bMI\b 8|\bMi\b 10|Redmi Note 9S|Redmi 5A|Redmi Note 5A Prime|Redmi Note 7 Pro',
             'N2G47H|M2001J2G|M2001J2I|M1805E10A|M2004J11G|M1902F1G|M2002J9G|M2004J19G|M2003J6A1G|M2012K11C|M2007J1SC',
         ],
-        'NokiaLumia'    => 'Lumia [0-9]{3,4}',
+        'NokiaLumia' => 'Lumia [0-9]{3,4}',
         // http://www.micromaxinfo.com/mobiles/smartphones
         // Added because the codes might conflict with Acer Tablets.
-        'Micromax'  => 'Micromax.*\b(A210|A92|A88|A72|A111|A110Q|A115|A116|A110|A90S|A26|A51|A35|A54|A25|A27|A89|A68|A65|A57|A90)\b',
+        'Micromax' => 'Micromax.*\b(A210|A92|A88|A72|A111|A110Q|A115|A116|A110|A90S|A26|A51|A35|A54|A25|A27|A89|A68|A65|A57|A90)\b',
         // @todo Complete the regex.
-        'Palm'  => 'PalmSource|Palm', // avantgo|blazer|elaine|hiptop|plucker|xiino ;
+        'Palm' => 'PalmSource|Palm', // avantgo|blazer|elaine|hiptop|plucker|xiino ;
         // Just for fun ;)
         'Vertu' => 'Vertu|Vertu.*Ltd|Vertu.*Ascent|Vertu.*Ayxta|Vertu.*Constellation(F|Quest)?|Vertu.*Monika|Vertu.*Signature',
         // http://www.pantech.co.kr/en/prod/prodList.do?gbrand=VEGA (PANTECH)
         // Most of the VEGA devices are legacy. PANTECH seem to be newer devices based on Android.
-        'Pantech'   => [
+        'Pantech' => [
             'PANTECH|IM-A850S|IM-A840S|IM-A830L|IM-A830K|IM-A830S|IM-A820L|IM-A810K|IM-A810S|IM-A800S|IM-T100K|IM-A725L',
             'IM-A780L|IM-A775C|IM-A770K|IM-A760S|IM-A750K|IM-A740S|IM-A730S|IM-A720L|IM-A710K|IM-A690L|IM-A690S|IM-A650S',
             'IM-A630K|IM-A600S|VEGA PTL21|PT003|P8010|ADR910L|P6030|P6020|P9070|P4100|P9060|P5000|CDM8992|TXT8045|ADR8995',
             'IS11PT|P2030|P6010|P8000|PT002|IS06|CDM8999|P9050|PT001|TXT8040|P2020|P9020|P2000|P7040|P7000|C790',
         ],
         // http://www.fly-phone.com/devices/smartphones/ ; Included only smartphones.
-        'Fly'   => 'IQ230|IQ444|IQ450|IQ440|IQ442|IQ441|IQ245|IQ256|IQ236|IQ255|IQ235|IQ245|IQ275|IQ240|IQ285|IQ280|IQ270|IQ260|IQ250',
+        'Fly' => 'IQ230|IQ444|IQ450|IQ440|IQ442|IQ441|IQ245|IQ256|IQ236|IQ255|IQ235|IQ245|IQ275|IQ240|IQ285|IQ280|IQ270|IQ260|IQ250',
         // http://fr.wikomobile.com
-        'Wiko'  => [
+        'Wiko' => [
             'KITE 4G|HIGHWAY|GETAWAY|STAIRWAY|DARKSIDE|DARKFULL|DARKNIGHT|DARKMOON|SLIDE|WAX 4G|RAINBOW|BLOOM|SUNSET|GOA(?!nna)|LENNY',
-            'BARRY|IGGY|OZZY|CINK FIVE|CINK PEAX|CINK PEAX 2|CINK SLIM|CINK SLIM 2|CINK +|CINK KING|CINK PEAX|CINK SLIM|SUBLIM'
+            'BARRY|IGGY|OZZY|CINK FIVE|CINK PEAX|CINK PEAX 2|CINK SLIM|CINK SLIM 2|CINK +|CINK KING|CINK PEAX|CINK SLIM|SUBLIM',
         ],
-        'iMobile'   => 'i-mobile (IQ|i-STYLE|idea|ZAA|Hitz)',
+        'iMobile' => 'i-mobile (IQ|i-STYLE|idea|ZAA|Hitz)',
         // Added simvalley mobile just for fun. They have some interesting devices.
         // http://www.simvalley.fr/telephonie---gps-_22_telephonie-mobile_telephones_.html
         'SimValley' => '\b(SP-80|XT-930|SX-340|XT-930|SX-310|SP-360|SP60|SPT-800|SP-120|SPT-800|SP-140|SPX-5|SPX-8|SP-100|SPX-8|SPX-12)\b',
-         // Wolfgang - a brand that is sold by Aldi supermarkets.
-         // http://www.wolfgangmobile.com/
-        'Wolfgang'  => 'AT-B24D|AT-AS50HD|AT-AS40W|AT-AS55HD|AT-AS45q2|AT-B26D|AT-AS50Q',
-        'Alcatel'   => 'Alcatel',
-        'Nintendo'  => 'Nintendo (3DS|Switch)',
+        // Wolfgang - a brand that is sold by Aldi supermarkets.
+        // http://www.wolfgangmobile.com/
+        'Wolfgang' => 'AT-B24D|AT-AS50HD|AT-AS40W|AT-AS55HD|AT-AS45q2|AT-B26D|AT-AS50Q',
+        'Alcatel' => 'Alcatel',
+        'Nintendo' => 'Nintendo (3DS|Switch)',
         // http://en.wikipedia.org/wiki/Amoi
-        'Amoi'  => 'Amoi',
+        'Amoi' => 'Amoi',
         // http://en.wikipedia.org/wiki/INQ
-        'INQ'   => 'INQ',
-        'OnePlus'   => 'ONEPLUS|CPH2663',
+        'INQ' => 'INQ',
+        'OnePlus' => 'ONEPLUS|CPH2663',
         // @Tapatalk is a mobile app; http://support.tapatalk.com/threads/smf-2-0-2-os-and-browser-detection-plugin-and-tapatalk.15565/#post-79039
-        'GenericPhone'  => 'Tapatalk|PDA;|SAGEM|\bmmp\b|pocket|\bpsp\b|symbian|Smartphone|smartfon|treo|up.browser|up.link|vodafone|\bwap\b|nokia|Series40|Series60|S60|SonyEricsson|N900|MAUI.*WAP.*Browser',
-        'Huawei'        => 'HMSCore|Huawei',
+        'GenericPhone' => 'Tapatalk|PDA;|SAGEM|\bmmp\b|pocket|\bpsp\b|symbian|Smartphone|smartfon|treo|up.browser|up.link|vodafone|\bwap\b|nokia|Series40|Series60|S60|SonyEricsson|N900|MAUI.*WAP.*Browser',
+        'Huawei' => 'HMSCore|Huawei',
     ];
 
     /**
      * List of tablet devices.
-     * @var array
      */
     protected static array $tabletDevices = [
         // @todo: check for mobile friendly emails topic.
-        'iPad'              => 'iPad|iPad.*Mobile',
+        'iPad' => 'iPad|iPad.*Mobile',
         // Removed |^.*Android.*Nexus(?!(?:Mobile).)*$
         // @see #442
         // @todo Merge NexusTablet into GoogleTablet.
-        'NexusTablet'       => 'Android.*Nexus[\s]+(7|9|10)',
+        'NexusTablet' => 'Android.*Nexus[\s]+(7|9|10)',
         // https://en.wikipedia.org/wiki/Pixel_C
-        'GoogleTablet'           => 'Android.*Pixel C',
-        'SamsungTablet'     => [
+        'GoogleTablet' => 'Android.*Pixel C',
+        'SamsungTablet' => [
             'SM-X926B|SM-X620|SM-X526B|SM-X520|SM-X626B|SM-X920|SM-X820|SM-X826B|SM-P625|SM-P620|SM-X306B|SM-T730|SM-T976B|SM-T875|SM-T575|SM-T545',
             'SM-X210R|SM-X216R|SM-X356B|SM-T860X|SM-T636B|SM-T509|SM-T503|SM-T720X|SM-T570|SM-T540|SM-T510X|SM-T830X|SM-T820X|SM-T710X|SM-T810X|SM-T365|SM-T550X|SM-T116',
             'SM-X616B|SM-X610|SM-X516B|SM-X910|SM-X916B|SM-X816B|SM-X810|SM-X710|SM-X716B|SM-X510|SM-P619|SM-T225|SM-T225N|SM-T736B|SM-T505|SM-T733|SM-X205|SM-X210|SM-X216B',
@@ -518,95 +511,95 @@ class MobileDetect
             'SAMSUNG.*Tablet|Galaxy.*Tab|SC-01C|GT-P1000|GT-P1003|GT-P1010|GT-P3105|GT-P6210|GT-P6800|GT-P6810|GT-P7100|GT-P7300|GT-P7310|GT-P7500|GT-P7510|SCH-I800|SCH-I815|SCH-I905|SGH-I957|SGH-I987|SM-X300|SM-T630',
         ],
         // http://docs.aws.amazon.com/silk/latest/developerguide/user-agent.html
-        'Kindle'            => 'Kindle|Silk.*Accelerated|Android.*\b(KFOT|KFTT|KFJWI|KFJWA|KFOTE|KFSOWI|KFTHWI|KFTHWA|KFAPWI|KFAPWA|WFJWAE|KFSAWA|KFSAWI|KFASWI|KFARWI|KFFOWI|KFGIWI|KFMEWI)\b|Android.*Silk/[0-9.]+ like Chrome/[0-9.]+ (?!Mobile)',
+        'Kindle' => 'Kindle|Silk.*Accelerated|Android.*\b(KFOT|KFTT|KFJWI|KFJWA|KFOTE|KFSOWI|KFTHWI|KFTHWA|KFAPWI|KFAPWA|WFJWAE|KFSAWA|KFSAWI|KFASWI|KFARWI|KFFOWI|KFGIWI|KFMEWI)\b|Android.*Silk/[0-9.]+ like Chrome/[0-9.]+ (?!Mobile)',
         // Only the Surface tablets with Windows RT are considered mobile.
         // http://msdn.microsoft.com/en-us/library/ie/hh920767(v=vs.85).aspx
-        'SurfaceTablet'     => 'Windows NT [0-9.]+; ARM;.*(Tablet|ARMBJS)',
+        'SurfaceTablet' => 'Windows NT [0-9.]+; ARM;.*(Tablet|ARMBJS)',
         // http://shopping1.hp.com/is-bin/INTERSHOP.enfinity/WFS/WW-USSMBPublicStore-Site/en_US/-/USD/ViewStandardCatalog-Browse?CatalogCategoryID=JfIQ7EN5lqMAAAEyDcJUDwMT
-        'HPTablet'          => 'HP Slate (7|8|10)|HP ElitePad 900|hp-tablet|EliteBook.*Touch|HP 8|Slate 21|HP SlateBook 10',
+        'HPTablet' => 'HP Slate (7|8|10)|HP ElitePad 900|hp-tablet|EliteBook.*Touch|HP 8|Slate 21|HP SlateBook 10',
         // Watch out for PadFone, see #132.
         // http://www.asus.com/de/Tablets_Mobile/Memo_Pad_Products/
-        'AsusTablet'        => [
+        'AsusTablet' => [
             'ME181C|P01Y|PO1MA|P01Z|\bP027\b|\bP024\b|\bP00C\b',
             '\bK00C\b|\bK00E\b|\bK00L\b|TX201LA|ME176C|ME102A|\bM80TA\b|ME372CL|ME560CG|ME372CG|ME302KL| K01A | K010 | K011 | K017 | K01E |ME572C|ME103K|ME170C|ME171C|\bME70C\b|ME581C|ME581CL|ME8510C',
             '^.*PadFone((?!Mobile).)*$|Transformer|TF101|TF101G|TF300T|TF300TG|TF300TL|TF700T|TF700KL|TF701T|TF810C|ME171|ME301T|ME302C|ME371MG|ME370T|ME372MG|ME172V|ME173X|ME400C|Slider SL101|\bK00F\b',
         ],
-        'BlackBerryTablet'  => 'PlayBook|RIM Tablet',
-        'HTCtablet'         => 'HTC_Flyer_P512|HTC Flyer|HTC Jetstream|HTC-P715a|HTC EVO View 4G|PG41200|PG09410',
-        'MotorolaTablet'    => 'xoom|sholest|MZ615|MZ605|MZ505|MZ601|MZ602|MZ603|MZ604|MZ606|MZ607|MZ608|MZ609|MZ615|MZ616|MZ617',
-        'NookTablet'        => 'Android.*Nook|NookColor|nook browser|BNRV200|BNRV200A|BNTV250|BNTV250A|BNTV400|BNTV600|LogicPD Zoom2',
+        'BlackBerryTablet' => 'PlayBook|RIM Tablet',
+        'HTCtablet' => 'HTC_Flyer_P512|HTC Flyer|HTC Jetstream|HTC-P715a|HTC EVO View 4G|PG41200|PG09410',
+        'MotorolaTablet' => 'xoom|sholest|MZ615|MZ605|MZ505|MZ601|MZ602|MZ603|MZ604|MZ606|MZ607|MZ608|MZ609|MZ615|MZ616|MZ617',
+        'NookTablet' => 'Android.*Nook|NookColor|nook browser|BNRV200|BNRV200A|BNTV250|BNTV250A|BNTV400|BNTV600|LogicPD Zoom2',
         // http://www.acer.ro/ac/ro/RO/content/drivers
         // http://www.packardbell.co.uk/pb/en/GB/content/download (Packard Bell is part of Acer)
         // http://us.acer.com/ac/en/US/content/group/tablets
         // http://www.acer.de/ac/de/DE/content/models/tablets/
         // Can conflict with Micromax and Motorola phones codes.
-        'AcerTablet'        => [
+        'AcerTablet' => [
             'Android.*; \b(A100|A101|A110|A200|A210|A211|A500|A501|A510|A511|A700|A701|W500|W500P|W501|W501P|W510|W511|W700|G100|G100W|B1-A71|B1-710|B1-711|A1-810|A1-811|A1-830)\b',
-            'W3-810|\bA3-A10\b|\bA3-A11\b|\bA3-A20\b|\bA3-A30|A3-A40'
+            'W3-810|\bA3-A10\b|\bA3-A11\b|\bA3-A20\b|\bA3-A30|A3-A40',
         ],
         // http://eu.computers.toshiba-europe.com/innovation/family/Tablets/1098744/banner_id/tablet_footerlink/
         // http://us.toshiba.com/tablets/tablet-finder
         // http://www.toshiba.co.jp/regza/tablet/
-        'ToshibaTablet'     => 'Android.*(AT100|AT105|AT200|AT205|AT270|AT275|AT300|AT305|AT1S5|AT500|AT570|AT700|AT830)|TOSHIBA.*FOLIO',
+        'ToshibaTablet' => 'Android.*(AT100|AT105|AT200|AT205|AT270|AT275|AT300|AT305|AT1S5|AT500|AT570|AT700|AT830)|TOSHIBA.*FOLIO',
         // http://www.nttdocomo.co.jp/english/service/developer/smart_phone/technical_info/spec/index.html
         // http://www.lg.com/us/tablets
-        'LGTablet'          => '\bL-06C|LG-V909|LG-V900|LG-V700|LG-V510|LG-V500|LG-V410|LG-V400|LG-VK810\b',
-        'FujitsuTablet'     => 'Android.*\b(F-01D|F-02F|F-05E|F-10D|M532|Q572)\b',
+        'LGTablet' => '\bL-06C|LG-V909|LG-V900|LG-V700|LG-V510|LG-V500|LG-V410|LG-V400|LG-VK810\b',
+        'FujitsuTablet' => 'Android.*\b(F-01D|F-02F|F-05E|F-10D|M532|Q572)\b',
         // Prestigio Tablets http://www.prestigio.com/support
-        'PrestigioTablet'   => [
+        'PrestigioTablet' => [
             'PMP3170B|PMP3270B|PMP3470B|PMP7170B|PMP3370B|PMP3570C|PMP5870C|PMP3670B|PMP5570C|PMP5770D|PMP3970B|PMP3870C|PMP5580C|PMP5880D|PMP5780D|PMP5588C|PMP7280C',
             'PMP7280C3G|PMP7280|PMP7880D|PMP5597D|PMP5597|PMP7100D|PER3464|PER3274|PER3574|PER3884|PER5274|PER5474|PMP5097CPRO|PMP5097|PMP7380D|PMP5297C|PMP5297C_QUAD',
             'PMP812E|PMP812E3G|PMP812F|PMP810E|PMP880TD|PMT3017|PMT3037|PMT3047|PMT3057|PMT7008|PMT5887|PMT5001|PMT5002',
         ],
         // http://support.lenovo.com/en_GB/downloads/default.page?#
-        'LenovoTablet'      => [
+        'LenovoTablet' => [
             'TB-X704L|TB-J606F|TB-X606F|TB-X306X|YT-J706X|TB128FU',
             'YT3-X50M|YT-X705F|YT-X703F|YT-X703L|YT-X705L|YT-X705X|TB2-X30F|TB2-X30L|TB2-X30M|A2107A-F|A2107A-H|TB3-730F|TB3-730M|TB3-730X|TB-7504F|TB-7504X|TB-X704F|TB-X104F|TB3-X70F|TB-X705F|TB-8504F|TB3-X70L|TB3-710F',
             'TB-X103F|TB-X304X|TB-X304F|TB-X304L|TB-X505F|TB-X505L|TB-X505X|TB-X605F|TB-X605L|TB-8703F|TB-8703X|TB-8703N|TB-8704N|TB-8704F|TB-8704X|TB-8704V|TB-7304F|TB-7304I|TB-7304X|Tab2A7-10F|Tab2A7-20F|TB2-X30L|YT3-X50L|YT3-X50F',
             'Lenovo TAB|Idea(Tab|Pad)( A1|A10| K1|)|ThinkPad([ ]+)?Tablet|YT3-850M|YT3-X90L|YT3-X90F|YT3-X90X|Lenovo.*(S2109|S2110|S5000|S6000|K3011|A3000|A3500|A1000|A2107|A2109|A1107|A5500|A7600|B6000|B8000|B8080)(-|)(FL|F|HV|H|)',
         ],
         // http://www.dell.com/support/home/us/en/04/Products/tab_mob/tablets
-        'DellTablet'        => 'Venue 11|Venue 8|Venue 7|Dell Streak 10|Dell Streak 7',
-        'XiaomiTablet'      => '21051182G',
+        'DellTablet' => 'Venue 11|Venue 8|Venue 7|Dell Streak 10|Dell Streak 7',
+        'XiaomiTablet' => '21051182G',
         // http://www.yarvik.com/en/matrix/tablets/
-        'YarvikTablet'      => [
+        'YarvikTablet' => [
             'Android.*\b(TAB10-400|TAB10-410|TAB13-201|TAB274EUK|TAB275EUK|TAB374EUK|TAB462EUK|TAB474EUK|TAB9-200)\b',
             'Android.*\b(TAB07-200|TAB07-201-3G|TAB07-210|TAB07-211|TAB07-212|TAB07-214|TAB07-220|TAB07-400|TAB07-485|TAB08-150|TAB08-200|TAB08-201-3G|TAB08-201-30|TAB09-100|TAB09-211|TAB09-410|TAB10-150|TAB10-201|TAB10-211)\b',
             'Android.*\b(TAB210|TAB211|TAB224|TAB250|TAB260|TAB264|TAB310|TAB360|TAB364|TAB410|TAB411|TAB420|TAB424|TAB450|TAB460|TAB461|TAB464|TAB465|TAB467|TAB468|TAB07-100|TAB07-101|TAB07-150|TAB07-151|TAB07-152)\b',
         ],
-        'MedionTablet'      => 'Android.*\bOYO\b|LIFE.*(P9212|P9514|P9516|S9512)|LIFETAB',
-        'ArnovaTablet'      => '97G4|AN10G2|AN7bG3|AN7fG3|AN8G3|AN8cG3|AN7G3|AN9G3|AN7dG3|AN7dG3ST|AN7dG3ChildPad|AN10bG3|AN10bG3DT|AN9G2',
+        'MedionTablet' => 'Android.*\bOYO\b|LIFE.*(P9212|P9514|P9516|S9512)|LIFETAB',
+        'ArnovaTablet' => '97G4|AN10G2|AN7bG3|AN7fG3|AN8G3|AN8cG3|AN7G3|AN9G3|AN7dG3|AN7dG3ST|AN7dG3ChildPad|AN10bG3|AN10bG3DT|AN9G2',
         // http://www.intenso.de/kategorie_en.php?kategorie=33
         // @todo: http://www.nbhkdz.com/read/b8e64202f92a2df129126bff.html - investigate
-        'IntensoTablet'     => 'INM8002KP|INM1010FP|INM805ND|Intenso Tab|TAB1004',
+        'IntensoTablet' => 'INM8002KP|INM1010FP|INM805ND|Intenso Tab|TAB1004',
         // IRU.ru Tablets http://www.iru.ru/catalog/soho/planetable/
-        'IRUTablet'         => 'M702pro',
-        'MegafonTablet'     => 'MegaFon V9|\bZTE V9\b|Android.*\bMT7A\b',
+        'IRUTablet' => 'M702pro',
+        'MegafonTablet' => 'MegaFon V9|\bZTE V9\b|Android.*\bMT7A\b',
         // http://www.e-boda.ro/tablete-pc.html
-        'EbodaTablet'       => 'E-Boda (Supreme|Impresspeed|Izzycomm|Essential)',
+        'EbodaTablet' => 'E-Boda (Supreme|Impresspeed|Izzycomm|Essential)',
         // http://www.allview.ro/produse/droseries/lista-tablete-pc/
-        'AllViewTablet'           => 'Allview.*(Viva|Alldro|City|Speed|All TV|Frenzy|Quasar|Shine|TX1|AX1|AX2)',
+        'AllViewTablet' => 'Allview.*(Viva|Alldro|City|Speed|All TV|Frenzy|Quasar|Shine|TX1|AX1|AX2)',
         // http://wiki.archosfans.com/index.php?title=Main_Page
         // @note Rewrite the regex format after we add more UAs.
-        'ArchosTablet'      => '\b(101G9|80G9|A101IT)\b|Qilive 97R|Archos5|\bARCHOS (70|79|80|90|97|101|FAMILYPAD|)(b|c|)(G10| Cobalt| TITANIUM(HD|)| Xenon| Neon|XSK| 2| XS 2| PLATINUM| CARBON|GAMEPAD)\b',
+        'ArchosTablet' => '\b(101G9|80G9|A101IT)\b|Qilive 97R|Archos5|\bARCHOS (70|79|80|90|97|101|FAMILYPAD|)(b|c|)(G10| Cobalt| TITANIUM(HD|)| Xenon| Neon|XSK| 2| XS 2| PLATINUM| CARBON|GAMEPAD)\b',
         // http://www.ainol.com/plugin.php?identifier=ainol&module=product
-        'AinolTablet'       => 'NOVO7|NOVO8|NOVO10|Novo7Aurora|Novo7Basic|NOVO7PALADIN|novo9-Spark',
-        'NokiaLumiaTablet'  => 'Lumia 2520',
+        'AinolTablet' => 'NOVO7|NOVO8|NOVO10|Novo7Aurora|Novo7Basic|NOVO7PALADIN|novo9-Spark',
+        'NokiaLumiaTablet' => 'Lumia 2520',
         // @todo: inspect http://esupport.sony.com/US/p/select-system.pl?DIRECTOR=DRIVER
         // Readers http://www.atsuhiro-me.net/ebook/sony-reader/sony-reader-web-browser
         // http://www.sony.jp/support/tablet/
-        'SonyTablet'        => [
+        'SonyTablet' => [
             'EBRD1101|EBRD1102|EBRD1201|SGP351|SGP341|SGP511|SGP512|SGP521|SGP541|SGP551|SGP621|SGP641|SGP612|SOT31|SGP771|SGP611|SGP612|SGP712',
             'Sony.*Tablet|Xperia Tablet|Sony Tablet S|SO-03E|SGPT12|SGPT13|SGPT114|SGPT121|SGPT122|SGPT123|SGPT111|SGPT112|SGPT113|SGPT131|SGPT132|SGPT133|SGPT211|SGPT212|SGPT213|SGP311|SGP312|SGP321',
         ],
         // http://www.support.philips.com/support/catalog/worldproducts.jsp?userLanguage=en&userCountry=cn&categoryid=3G_LTE_TABLET_SU_CN_CARE&title=3G%20tablets%20/%20LTE%20range&_dyncharset=UTF-8
-        'PhilipsTablet'     => '\b(PI2010|PI3000|PI3100|PI3105|PI3110|PI3205|PI3210|PI3900|PI4010|PI7000|PI7100)\b',
+        'PhilipsTablet' => '\b(PI2010|PI3000|PI3100|PI3105|PI3110|PI3205|PI3210|PI3900|PI4010|PI7000|PI7100)\b',
         // db + http://www.cube-tablet.com/buy-products.html
-        'CubeTablet'        => 'Android.*(K8GT|U9GT|U10GT|U16GT|U17GT|U18GT|U19GT|U20GT|U23GT|U30GT)|CUBE U8GT',
+        'CubeTablet' => 'Android.*(K8GT|U9GT|U10GT|U16GT|U17GT|U18GT|U19GT|U20GT|U23GT|U30GT)|CUBE U8GT',
         // http://www.cobyusa.com/?p=pcat&pcat_id=3001
-        'CobyTablet'        => 'MID1042|MID1045|MID1125|MID1126|MID7012|MID7014|MID7015|MID7034|MID7035|MID7036|MID7042|MID7048|MID7127|MID8042|MID8048|MID8127|MID9042|MID9740|MID9742|MID7022|MID7010',
+        'CobyTablet' => 'MID1042|MID1045|MID1125|MID1126|MID7012|MID7014|MID7015|MID7034|MID7035|MID7036|MID7042|MID7048|MID7127|MID8042|MID8048|MID8127|MID9042|MID9740|MID9742|MID7022|MID7010',
         // http://www.match.net.cn/products.asp
-        'MIDTablet'         => [
+        'MIDTablet' => [
             'M9701|M9000|M9100|M806|M1052|M806|T703|MID701|MID713|MID710|MID727|MID760|MID830|MID728|MID933|MID125|MID810|MID732|MID120|MID930|MID800',
             'MID731|MID900|MID100|MID820|MID735|MID980|MID130|MID833|MID737|MID960|MID135|MID860|MID736|MID140|MID930|MID835|MID733|MID4X10',
         ],
@@ -614,40 +607,40 @@ class MobileDetect
         // @todo Research the Windows Tablets.
         'MSITablet' => 'MSI \b(Primo 73K|Primo 73L|Primo 81L|Primo 77|Primo 93|Primo 75|Primo 76|Primo 73|Primo 81|Primo 91|Primo 90|Enjoy 71|Enjoy 7|Enjoy 10)\b',
         // @todo http://www.kyoceramobile.com/support/drivers/
-    //    'KyoceraTablet' => null,
+        //    'KyoceraTablet' => null,
         // @todo http://intexuae.com/index.php/category/mobile-devices/tablets-products/
-    //    'IntextTablet' => null,
+        //    'IntextTablet' => null,
         // http://pdadb.net/index.php?m=pdalist&list=SMiT (NoName Chinese Tablets)
         // http://www.imp3.net/14/show.php?itemid=20454
-        'SMiTTablet'        => 'Android.*(\bMID\b|MID-560|MTV-T1200|MTV-PND531|MTV-P1101|MTV-PND530)',
+        'SMiTTablet' => 'Android.*(\bMID\b|MID-560|MTV-T1200|MTV-PND531|MTV-P1101|MTV-PND530)',
         // http://www.rock-chips.com/index.php?do=prod&pid=2
-        'RockChipTablet'    => 'Android.*(RK2818|RK2808A|RK2918|RK3066)|RK2738|RK2808A',
+        'RockChipTablet' => 'Android.*(RK2818|RK2808A|RK2918|RK3066)|RK2738|RK2808A',
         // http://www.fly-phone.com/devices/tablets/ ; http://www.fly-phone.com/service/
-        'FlyTablet'         => 'IQ310|Fly Vision',
+        'FlyTablet' => 'IQ310|Fly Vision',
         // http://www.bqreaders.com/gb/tablets-prices-sale.html
-        'bqTablet'          => 'Android.*(bq)?.*\b(Elcano|Curie|Edison|Maxwell|Kepler|Pascal|Tesla|Hypatia|Platon|Newton|Livingstone|Cervantes|Avant|Aquaris ([E|M]10|M8))\b|Maxwell.*Lite|Maxwell.*Plus',
+        'bqTablet' => 'Android.*(bq)?.*\b(Elcano|Curie|Edison|Maxwell|Kepler|Pascal|Tesla|Hypatia|Platon|Newton|Livingstone|Cervantes|Avant|Aquaris ([E|M]10|M8))\b|Maxwell.*Lite|Maxwell.*Plus',
         // http://www.huaweidevice.com/worldwide/productFamily.do?method=index&directoryId=5011&treeId=3290
         // http://www.huaweidevice.com/worldwide/downloadCenter.do?method=index&directoryId=3372&treeId=0&tb=1&type=software (including legacy tablets)
-        'HuaweiTablet'      => 'MediaPad|MediaPad 7 Youth|IDEOS S7|S7-201c|S7-202u|S7-101|S7-103|S7-104|S7-105|S7-106|S7-201|S7-Slim|M2-A01L|BAH-L09|BAH-W09|AGS-L09|CMR-AL19|KOB2-L09|BG2-U01|BG2-W09|BG2-U03|AGS-W09',
+        'HuaweiTablet' => 'MediaPad|MediaPad 7 Youth|IDEOS S7|S7-201c|S7-202u|S7-101|S7-103|S7-104|S7-105|S7-106|S7-201|S7-Slim|M2-A01L|BAH-L09|BAH-W09|AGS-L09|CMR-AL19|KOB2-L09|BG2-U01|BG2-W09|BG2-U03|AGS-W09',
         // Nec or Medias Tab
-        'NecTablet'         => '\bN-06D|\bN-08D',
+        'NecTablet' => '\bN-06D|\bN-08D',
         // Pantech Tablets: http://www.pantechusa.com/phones/
-        'PantechTablet'     => 'Pantech.*P4100',
+        'PantechTablet' => 'Pantech.*P4100',
         // Broncho Tablets: http://www.broncho.cn/ (hard to find)
-        'BronchoTablet'     => 'Broncho.*(N701|N708|N802|a710)',
+        'BronchoTablet' => 'Broncho.*(N701|N708|N802|a710)',
         // http://versusuk.com/support.html
-        'VersusTablet'      => 'TOUCHPAD.*[78910]|\bTOUCHTAB\b',
+        'VersusTablet' => 'TOUCHPAD.*[78910]|\bTOUCHTAB\b',
         // http://www.zync.in/index.php/our-products/tablet-phablets
-        'ZyncTablet'        => 'z1000|Z99 2G|z930|z990|z909|Z919|z900', // Removed "z999" because of https://github.com/serbanghita/Mobile-Detect/issues/717
+        'ZyncTablet' => 'z1000|Z99 2G|z930|z990|z909|Z919|z900', // Removed "z999" because of https://github.com/serbanghita/Mobile-Detect/issues/717
         // http://www.positivoinformatica.com.br/www/pessoal/tablet-ypy/
-        'PositivoTablet'    => 'TB07STA|TB10STA|TB07FTA|TB10FTA',
+        'PositivoTablet' => 'TB07STA|TB10STA|TB07FTA|TB10FTA',
         // https://www.nabitablet.com/
-        'NabiTablet'        => 'Android.*\bNabi',
-        'KoboTablet'        => 'Kobo Touch|\bK080\b|\bVox\b Build|\bArc\b Build',
+        'NabiTablet' => 'Android.*\bNabi',
+        'KoboTablet' => 'Kobo Touch|\bK080\b|\bVox\b Build|\bArc\b Build',
         // French Danew Tablets http://www.danew.com/produits-tablette.php
-        'DanewTablet'       => 'DSlide.*\b(700|701R|702|703R|704|802|970|971|972|973|974|1010|1012)\b',
+        'DanewTablet' => 'DSlide.*\b(700|701R|702|703R|704|802|970|971|972|973|974|1010|1012)\b',
         // Texet Tablets and Readers http://www.texet.ru/tablet/
-        'TexetTablet'       => [
+        'TexetTablet' => [
             'TB-840HD|TB-760HD|TB-750HD|TB-740HD|TB-730HD|TB-722HD|TB-720HD|TB-700HD|TB-500HD|TB-470HD|TB-431HD|TB-430HD|TB-506|TB-504|TB-446|TB-436|TB-416|TB-146SE|TB-126SE',
             'TB-719A|TB-823A|TB-805A|TB-723A|TB-715A|TB-707A|TB-705A|TB-709A|TB-711A|TB-890HD|TB-880HD|TB-790HD|TB-780HD|TB-770HD|TB-721HD|TB-710HD|TB-434HD|TB-860HD',
             'TM-7011|TM-7010|TM-7023|TM-7025|TM-7037W|TM-7038W|TM-7027W|TM-9720|TM-9725|TM-9737W|TM-1020|TM-9738W|TM-9740|TM-9743W|TB-807A|TB-771A|TB-727A|TB-725A',
@@ -656,24 +649,24 @@ class MobileDetect
         // Avoid detecting 'PLAYSTATION 3' as mobile.
         'PlaystationTablet' => 'Playstation.*(Portable|Vita)',
         // http://www.trekstor.de/surftabs.html
-        'TrekstorTablet'    => 'ST10416-1|VT10416-1|ST70408-1|ST702xx-1|ST702xx-2|ST80208|ST97216|ST70104-2|VT10416-2|ST10216-2A|SurfTab',
+        'TrekstorTablet' => 'ST10416-1|VT10416-1|ST70408-1|ST702xx-1|ST702xx-2|ST80208|ST97216|ST70104-2|VT10416-2|ST10216-2A|SurfTab',
         // http://www.pyleaudio.com/Products.aspx?%2fproducts%2fPersonal-Electronics%2fTablets
-        'PyleAudioTablet'   => '\b(PTBL10CEU|PTBL10C|PTBL72BC|PTBL72BCEU|PTBL7CEU|PTBL7C|PTBL92BC|PTBL92BCEU|PTBL9CEU|PTBL9CUK|PTBL9C)\b',
+        'PyleAudioTablet' => '\b(PTBL10CEU|PTBL10C|PTBL72BC|PTBL72BCEU|PTBL7CEU|PTBL7C|PTBL92BC|PTBL92BCEU|PTBL9CEU|PTBL9CUK|PTBL9C)\b',
         // http://www.advandigital.com/index.php?link=content-product&jns=JP001
         // because of the short codenames we have to include whitespaces to reduce the possible conflicts.
-        'AdvanTablet'       => 'Android.* \b(E3A|T3X|T5C|T5B|T3E|T3C|T3B|T1J|T1F|T2A|T1H|T1i|E1C|T1-E|T5-A|T4|E1-B|T2Ci|T1-B|T1-D|O1-A|E1-A|T1-A|T3A|T4i)\b ',
+        'AdvanTablet' => 'Android.* \b(E3A|T3X|T5C|T5B|T3E|T3C|T3B|T1J|T1F|T2A|T1H|T1i|E1C|T1-E|T5-A|T4|E1-B|T2Ci|T1-B|T1-D|O1-A|E1-A|T1-A|T3A|T4i)\b ',
         // http://www.danytech.com/category/tablet-pc
         'DanyTechTablet' => 'Genius Tab G3|Genius Tab S2|Genius Tab Q3|Genius Tab G4|Genius Tab Q4|Genius Tab G-II|Genius TAB GII|Genius TAB GIII|Genius Tab S1',
         // http://www.galapad.net/product.html ; https://github.com/serbanghita/Mobile-Detect/issues/761
-        'GalapadTablet'     => 'Android [0-9.]+; [a-z-]+; \bG1\b',
+        'GalapadTablet' => 'Android [0-9.]+; [a-z-]+; \bG1\b',
         // http://www.micromaxinfo.com/tablet/funbook
-        'MicromaxTablet'    => 'Funbook|Micromax.*\b(P250|P560|P360|P362|P600|P300|P350|P500|P275)\b',
+        'MicromaxTablet' => 'Funbook|Micromax.*\b(P250|P560|P360|P362|P600|P300|P350|P500|P275)\b',
         // http://www.karbonnmobiles.com/products_tablet.php
-        'KarbonnTablet'     => 'Android.*\b(A39|A37|A34|ST8|ST10|ST7|Smart Tab3|Smart Tab2)\b',
+        'KarbonnTablet' => 'Android.*\b(A39|A37|A34|ST8|ST10|ST7|Smart Tab3|Smart Tab2)\b',
         // http://www.myallfine.com/Products.asp
-        'AllFineTablet'     => 'Fine7 Genius|Fine7 Shine|Fine7 Air|Fine8 Style|Fine9 More|Fine10 Joy|Fine11 Wide',
+        'AllFineTablet' => 'Fine7 Genius|Fine7 Shine|Fine7 Air|Fine8 Style|Fine9 More|Fine10 Joy|Fine11 Wide',
         // http://www.proscanvideo.com/products-search.asp?itemClass=TABLET&itemnmbr=
-        'PROSCANTablet'     => [
+        'PROSCANTablet' => [
             '\b(PLT8088|PLT8223G|PLT8234G|PLT8235G|PLT8816K|PLT9011|PLT9045K|PLT9233G|PLT9735|PLT9760G|PLT9770G)\b',
             '\b(PLT7045KB|PLT7071KG|PLT7072|PLT7223G|PLT7225G|PLT7777G|PLT7810K|PLT7849G|PLT7851G|PLT7852G|PLT8015|PLT8031|PLT8034|PLT8036|PLT8080K|PLT8082)\b',
             '\b(PEM63|PLT1023G|PLT1041|PLT1044|PLT1044G|PLT1091|PLT4311|PLT4311PL|PLT4315|PLT7030|PLT7033|PLT7033D|PLT7035|PLT7035D|PLT7044K|PLT7045K)\b',
@@ -682,7 +675,7 @@ class MobileDetect
         'YONESTablet' => 'BQ1078|BC1003|BC1077|RK9702|BC9730|BC9001|IT9001|BC7008|BC7010|BC708|BC728|BC7012|BC7030|BC7027|BC7026',
         // http://www.cjshowroom.com/eproducts.aspx?classcode=004001001
         // China manufacturer makes tablets for different small brands (eg. http://www.zeepad.net/index.html)
-        'ChangJiaTablet'    => [
+        'ChangJiaTablet' => [
             'TPC10101|TPC10103|TPC10106|TPC10111|TPC10203|TPC10205|TPC10503',
             'TPC8203|TPC8205|TPC8503|TPC9106|TPC9701|TPC97101|TPC97103|TPC97105|TPC97106|TPC97111|TPC97113|TPC97203|TPC97603|TPC97809|TPC97205',
             'TPC7102|TPC7103|TPC7105|TPC7106|TPC7107|TPC7201|TPC7203|TPC7205|TPC7210|TPC7708|TPC7709|TPC7712|TPC7110|TPC8101|TPC8103|TPC8105|TPC8106',
@@ -692,7 +685,7 @@ class MobileDetect
         // http://www.ptcl.com.pk/pd_content.php?pd_id=284 (EVOTAB)
         // @todo: Softwiner tablets?
         // aka. Cute or Cool tablets. Not sure yet, must research to avoid collisions.
-        'GUTablet'          => 'TX-A1301|TX-M9002|Q702|kf026', // A12R|D75A|D77|D79|R83|A95|A106C|R15|A75|A76|D71|D72|R71|R73|R77|D82|R85|D92|A97|D92|R91|A10F|A77F|W71F|A78F|W78F|W81F|A97F|W91F|W97F|R16G|C72|C73E|K72|K73|R96G
+        'GUTablet' => 'TX-A1301|TX-M9002|Q702|kf026', // A12R|D75A|D77|D79|R83|A95|A106C|R15|A75|A76|D71|D72|R71|R73|R77|D82|R85|D92|A97|D92|R91|A10F|A77F|W71F|A78F|W78F|W81F|A97F|W91F|W97F|R16G|C72|C73E|K72|K73|R96G
         // http://www.pointofview-online.com/showroom.php?shop_mode=product_listing&category_id=118
         'PointOfViewTablet' => [
             'TAB-PL1015|TAB-P1025|TAB-PI1045|TAB-P1325|TAB-PROTAB[0-9]+|TAB-PROTAB25|TAB-PROTAB26|TAB-PROTAB27|TAB-PROTAB26XL|TAB-PROTAB2-IPS9|TAB-PROTAB30-IPS9|TAB-PROTAB25XXL|TAB-PROTAB26-IPS10|TAB-PROTAB30-IPS10',
@@ -700,15 +693,15 @@ class MobileDetect
         ],
         // http://www.overmax.pl/pl/katalog-produktow,p8/tablety,c14/
         // @todo: add more tests.
-        'OvermaxTablet'     => 'OV-(SteelCore|NewBase|Basecore|Baseone|Exellen|Quattor|EduTab|Solution|ACTION|BasicTab|TeddyTab|MagicTab|Stream|TB-08|TB-09)|Qualcore 1027',
+        'OvermaxTablet' => 'OV-(SteelCore|NewBase|Basecore|Baseone|Exellen|Quattor|EduTab|Solution|ACTION|BasicTab|TeddyTab|MagicTab|Stream|TB-08|TB-09)|Qualcore 1027',
         // http://hclmetablet.com/India/index.php
-        'HCLTablet'         => 'HCL.*Tablet|Connect-3G-2.0|Connect-2G-2.0|ME Tablet U1|ME Tablet U2|ME Tablet G1|ME Tablet X1|ME Tablet Y2|ME Tablet Sync',
+        'HCLTablet' => 'HCL.*Tablet|Connect-3G-2.0|Connect-2G-2.0|ME Tablet U1|ME Tablet U2|ME Tablet G1|ME Tablet X1|ME Tablet Y2|ME Tablet Sync',
         // http://www.edigital.hu/Tablet_es_e-book_olvaso/Tablet-c18385.html
-        'DPSTablet'         => 'DPS Dream 9|DPS Dual 7',
+        'DPSTablet' => 'DPS Dream 9|DPS Dual 7',
         // http://www.visture.com/index.asp
-        'VistureTablet'     => 'V97 HD|i75 3G|Visture V4( HD)?|Visture V5( HD)?|Visture V10',
+        'VistureTablet' => 'V97 HD|i75 3G|Visture V4( HD)?|Visture V5( HD)?|Visture V10',
         // http://www.mijncresta.nl/tablet
-        'CrestaTablet'     => 'CTP(-)?810|CTP(-)?818|CTP(-)?828|CTP(-)?838|CTP(-)?888|CTP(-)?978|CTP(-)?980|CTP(-)?987|CTP(-)?988|CTP(-)?989',
+        'CrestaTablet' => 'CTP(-)?810|CTP(-)?818|CTP(-)?828|CTP(-)?838|CTP(-)?888|CTP(-)?978|CTP(-)?980|CTP(-)?987|CTP(-)?988|CTP(-)?989',
         // MediaTek - http://www.mediatek.com/_en/01_products/02_proSys.php?cata_sn=1&cata1_sn=1&cata2_sn=309
         'MediatekTablet' => '\bMT8125|MT8389|MT8135|MT8377\b',
         // Concorde tab
@@ -725,15 +718,15 @@ class MobileDetect
             'FreeTAB 7003|FreeTAB 7002|FreeTAB 1002|FreeTAB 7801|FreeTAB 1331|FreeTAB 1004|FreeTAB 8002|FreeTAB 8014|FreeTAB 9704|FreeTAB 1003',
         ],
         // Vonino Tablets
-        'VoninoTablet'  => [
+        'VoninoTablet' => [
             '\b(Argus[ _]?S|Diamond[ _]?79HD|Emerald[ _]?78E|Luna[ _]?70C|Onyx[ _]?S|Onyx[ _]?Z|Orin[ _]?HD|Orin[ _]?S|Otis[ _]?S|SpeedStar[ _]?S|Magnet[ _]?M9|Primus[ _]?94[ _]?3G|Primus[ _]?94HD|Primus[ _]?QS)\b',
             '\b(Android.*\bQ8\b|Sirius[ _]?EVO[ _]?QS|Sirius[ _]?QS|Spirit[ _]?S)\b',
         ],
         // ECS Tablets - http://www.ecs.com.tw/ECSWebSite/Product/Product_Tablet_List.aspx?CategoryID=14&MenuID=107&childid=M_107&LanID=0
-        'ECSTablet'     => 'V07OT2|TM105A|S10OT1|TR10CS1',
+        'ECSTablet' => 'V07OT2|TM105A|S10OT1|TR10CS1',
         // Storex Tablets - http://storex.fr/espace_client/support.html
         // @note: no need to add all the tablet codes since they are guided by the first regex.
-        'StorexTablet'  => 'eZee[_\']?(Tab|Go)[0-9]+|TabLC7|Looney Tunes Tab',
+        'StorexTablet' => 'eZee[_\']?(Tab|Go)[0-9]+|TabLC7|Looney Tunes Tab',
         // Generic Vodafone tablets.
         'VodafoneTablet' => 'SmartTab([ ]+)?[0-9]+|SmartTabII10|SmartTabII7|VF-1497|VFD 1400',
         // French tablets - Essentiel B http://www.boulanger.fr/tablette_tactile_e-book/tablette_tactile_essentiel_b/cl_68908.htm?multiChoiceToDelete=brand&mc_brand=essentielb
@@ -742,9 +735,9 @@ class MobileDetect
         // Ross & Moor - http://ross-moor.ru/
         'RossMoorTablet' => 'RM-790|RM-997|RMD-878G|RMD-974R|RMT-705A|RMT-701|RME-601|RMT-501|RMT-711',
         // i-mobile http://product.i-mobilephone.com/Mobile_Device
-        'iMobileTablet'        => 'i-mobile i-note',
+        'iMobileTablet' => 'i-mobile i-note',
         // http://www.tolino.de/de/vergleichen/
-        'TolinoTablet'  => 'tolino tab [0-9.]+|tolino shine',
+        'TolinoTablet' => 'tolino tab [0-9.]+|tolino shine',
         // AudioSonic - a Kmart brand
         // http://www.kmart.com.au/webapp/wcs/stores/servlet/Search?langId=-1&storeId=10701&catalogId=10001&categoryId=193001&pageSize=72&currentPage=1&searchCategory=193001%2b4294965664&sortBy=p_MaxPrice%7c1
         'AudioSonicTablet' => '\bC-22Q|T7-QC|T-17B|T-17P\b',
@@ -771,19 +764,19 @@ class MobileDetect
         'FX2Tablet' => 'FX2 PAD7|FX2 PAD10',
         // http://www.xoro.de/produkte/
         // @note: Might be the same brand with 'Simply tablets'
-        'XoroTablet'        => [
+        'XoroTablet' => [
             'KidsPAD 701|PAD[ ]?712|PAD[ ]?714|PAD[ ]?716|PAD[ ]?717|PAD[ ]?718|PAD[ ]?720|PAD[ ]?721|PAD[ ]?722|PAD[ ]?790',
             'PAD[ ]?792|PAD[ ]?900|PAD[ ]?9715D|PAD[ ]?9716DR|PAD[ ]?9718DR|PAD[ ]?9719QR|PAD[ ]?9720QR|TelePAD1030|Telepad1032',
             'TelePAD730|TelePAD731|TelePAD732|TelePAD735Q|TelePAD830|TelePAD9730|TelePAD795|MegaPAD 1331|MegaPAD 1851|MegaPAD 2151',
         ],
         // http://www1.viewsonic.com/products/computing/tablets/
-        'ViewsonicTablet'   => 'ViewPad 10pi|ViewPad 10e|ViewPad 10s|ViewPad E72|ViewPad7|ViewPad E100|ViewPad 7e|ViewSonic VB733|VB100a',
+        'ViewsonicTablet' => 'ViewPad 10pi|ViewPad 10e|ViewPad 10s|ViewPad E72|ViewPad7|ViewPad E100|ViewPad 7e|ViewSonic VB733|VB100a',
         // https://www.verizonwireless.com/tablets/verizon/
         'VerizonTablet' => 'QTAQZ3|QTAIR7|QTAQTZ3|QTASUN1|QTASUN2|QTAXIA1',
         // http://www.odys.de/web/internet-tablet_en.html
-        'OdysTablet'        => 'LOOX|XENO10|ODYS[ -](Space|EVO|Xpress|NOON)|\bXELIO\b|Xelio10Pro|XELIO7PHONETAB|XELIO10EXTREME|XELIOPT2|NEO_QUAD10',
+        'OdysTablet' => 'LOOX|XENO10|ODYS[ -](Space|EVO|Xpress|NOON)|\bXELIO\b|Xelio10Pro|XELIO7PHONETAB|XELIO10EXTREME|XELIOPT2|NEO_QUAD10',
         // http://www.captiva-power.de/products.html#tablets-en
-        'CaptivaTablet'     => 'CAPTIVA PAD',
+        'CaptivaTablet' => 'CAPTIVA PAD',
         // IconBIT - http://www.iconbit.com/products/tablets/
         'IconbitTablet' => 'NetTAB|NT-3702|NT-3702S|NT-3702S|NT-3603P|NT-3603P|NT-0704S|NT-0704S|NT-3805C|NT-3805C|NT-0806C|NT-0806C|NT-0909T|NT-0909T|NT-0907S|NT-0907S|NT-0902S|NT-0902S',
         // http://www.teclast.com/topic.php?channelID=70&topicID=140&pid=63
@@ -801,8 +794,8 @@ class MobileDetect
             '\b(V820w|V820|Vi20|V711|VI30W|V712|V891w|V972|V819w|V820w|Vi60|V820w|V711|V813s|V801|V819|V975s|V801|V819)\b[\s]+',
             '\b(V819|V818|V811|V712|V975m|V101w|V961w|V812|V818|V971|V971s|V919|V989|V116w|V102w|V973|Vi40)\b[\s]+|V10 \b4G\b',
         ],
-        'JaytechTablet'     => 'TPC-PA762',
-        'BlaupunktTablet'   => 'Endeavour 800NG|Endeavour 1010',
+        'JaytechTablet' => 'TPC-PA762',
+        'BlaupunktTablet' => 'Endeavour 800NG|Endeavour 1010',
         // http://www.digma.ru/support/download/
         // @todo: Ebooks also (if requested)
         'DigmaTablet' => '\b(iDx10|iDx9|iDx8|iDx7|iDxD7|iDxD8|iDsQ8|iDsQ7|iDsQ8|iDsD10|iDnD7|3TS804H|iDsQ11|iDj7|iDs10)\b',
@@ -851,10 +844,10 @@ class MobileDetect
         // http://global.hisense.com/product/asia/tablet/Sero7/201412/t20141215_91832.htm
         'HisenseTablet' => '\b(F5281|E2371)\b',
         // http://www.tesco.com/direct/hudl/
-        'Hudl'              => 'Hudl HT7S3|Hudl 2',
+        'Hudl' => 'Hudl HT7S3|Hudl 2',
         // http://www.telstra.com.au/home-phone/thub-2/
-        'TelstraTablet'     => 'T-Hub2',
-        'GenericTablet'     => [
+        'TelstraTablet' => 'T-Hub2',
+        'GenericTablet' => [
             'Android.*\b97D\b|Tablet(?!.*PC)|BNTV250A|MID-WCDMA|LogicPD Zoom2|\bA7EB\b|CatNova8|A1_07|CT704|CT1002',
             '\bM721\b|rk30sdk|\bEVOTAB\b|M758A|ET904|ALUMIUM10|Smartfren Tab|Endeavour 1010|Tablet-PC-4|Tagi Tab',
             '\bM6pro\b|CT1020W|arc 10HD|\bTP750\b|\bQTAQZ3\b|WVT101|TM1088|KT107',
@@ -863,38 +856,37 @@ class MobileDetect
 
     /**
      * List of mobile Operating Systems.
-     * @var array
      */
     protected static array $operatingSystems = [
-        'AndroidOS'         => 'Android',
-        'BlackBerryOS'      => 'blackberry|\bBB10\b|rim tablet os',
-        'PalmOS'            => 'PalmOS|avantgo|blazer|elaine|hiptop|palm|plucker|xiino',
-        'SymbianOS'         => 'Symbian|SymbOS|Series60|Series40|SYB-[0-9]+|\bS60\b',
+        'AndroidOS' => 'Android',
+        'BlackBerryOS' => 'blackberry|\bBB10\b|rim tablet os',
+        'PalmOS' => 'PalmOS|avantgo|blazer|elaine|hiptop|palm|plucker|xiino',
+        'SymbianOS' => 'Symbian|SymbOS|Series60|Series40|SYB-[0-9]+|\bS60\b',
         // @reference: http://en.wikipedia.org/wiki/Windows_Mobile
-        'WindowsMobileOS'   => 'Windows CE.*(PPC|Smartphone|Mobile|[0-9]{3}x[0-9]{3})|Windows Mobile|Windows Phone [0-9.]+|WCE;',
+        'WindowsMobileOS' => 'Windows CE.*(PPC|Smartphone|Mobile|[0-9]{3}x[0-9]{3})|Windows Mobile|Windows Phone [0-9.]+|WCE;',
         // @reference: http://en.wikipedia.org/wiki/Windows_Phone
         // http://wifeng.cn/?r=blog&a=view&id=106
         // http://nicksnettravels.builttoroam.com/post/2011/01/10/Bogus-Windows-Phone-7-User-Agent-String.aspx
         // http://msdn.microsoft.com/library/ms537503.aspx
         // https://msdn.microsoft.com/en-us/library/hh869301(v=vs.85).aspx
-        'WindowsPhoneOS'   => 'Windows Phone 10.0|Windows Phone 8.1|Windows Phone 8.0|Windows Phone OS|XBLWP7|ZuneWP7|Windows NT 6.[23]; ARM;',
-        'iOS'               => '\biPhone.*Mobile|\biPod|\biPad|AppleCoreMedia',
+        'WindowsPhoneOS' => 'Windows Phone 10.0|Windows Phone 8.1|Windows Phone 8.0|Windows Phone OS|XBLWP7|ZuneWP7|Windows NT 6.[23]; ARM;',
+        'iOS' => '\biPhone.*Mobile|\biPod|\biPad|AppleCoreMedia',
         // https://en.wikipedia.org/wiki/IPadOS
         'iPadOS' => 'CPU OS 13',
         // @reference https://en.m.wikipedia.org/wiki/Sailfish_OS
         // https://sailfishos.org/
-        'SailfishOS'        => 'Sailfish',
+        'SailfishOS' => 'Sailfish',
         // http://en.wikipedia.org/wiki/MeeGo
         // @todo: research MeeGo in UAs
-        'MeeGoOS'           => 'MeeGo',
+        'MeeGoOS' => 'MeeGo',
         // http://en.wikipedia.org/wiki/Maemo
         // @todo: research Maemo in UAs
-        'MaemoOS'           => 'Maemo',
-        'JavaOS'            => 'J2ME/|\bMIDP\b|\bCLDC\b', // '|Java/' produces bug #135
-        'webOS'             => 'webOS|hpwOS',
-        'badaOS'            => '\bBada\b',
-        'BREWOS'            => 'BREW',
-        'HarmonyOS'         => 'HarmonyOS',
+        'MaemoOS' => 'Maemo',
+        'JavaOS' => 'J2ME/|\bMIDP\b|\bCLDC\b', // '|Java/' produces bug #135
+        'webOS' => 'webOS|hpwOS',
+        'badaOS' => '\bBada\b',
+        'BREWOS' => 'BREW',
+        'HarmonyOS' => 'HarmonyOS',
     ];
 
     /**
@@ -903,55 +895,53 @@ class MobileDetect
      * IMPORTANT: This is a list of mobile browsers only.
      * Since Mobile Detect 2.x.x, this list supports mobile browsers only.
      * Mobile Detect was never designed to detect all browsers.
-     * @var array
      */
     protected static array $browsers = [
-        //'Vivaldi'         => 'Vivaldi',
+        // 'Vivaldi'         => 'Vivaldi',
         // @reference: https://developers.google.com/chrome/mobile/docs/user-agent
-        'Chrome'          => '\bCrMo\b|CriOS.*Mobile|Android.*Chrome/[.0-9]* Mobile',
-        'Dolfin'          => '\bDolfin\b',
-        'Opera'           => 'Opera.*Mini|Opera.*Mobi|Android.*Opera|Mobile.*OPR/[0-9.]+$|Coast/[0-9.]+',
-        'Skyfire'         => 'Skyfire',
+        'Chrome' => '\bCrMo\b|CriOS.*Mobile|Android.*Chrome/[.0-9]* Mobile',
+        'Dolfin' => '\bDolfin\b',
+        'Opera' => 'Opera.*Mini|Opera.*Mobi|Android.*Opera|Mobile.*OPR/[0-9.]+$|Coast/[0-9.]+',
+        'Skyfire' => 'Skyfire',
         // Added "Edge on iOS" https://github.com/serbanghita/Mobile-Detect/issues/764
-        'Edge'             => 'EdgiOS.*Mobile|Mobile Safari/[.0-9]* Edge',
-        'IE'              => 'IEMobile|MSIEMobile', // |Trident/[.0-9]+
-        'Firefox'         => 'fennec|firefox.*maemo|(Mobile|Tablet).*Firefox|Firefox.*Mobile|FxiOS.*Mobile',
-        'Bolt'            => 'bolt',
-        'TeaShark'        => 'teashark',
-        'Blazer'          => 'Blazer',
+        'Edge' => 'EdgiOS.*Mobile|Mobile Safari/[.0-9]* Edge',
+        'IE' => 'IEMobile|MSIEMobile', // |Trident/[.0-9]+
+        'Firefox' => 'fennec|firefox.*maemo|(Mobile|Tablet).*Firefox|Firefox.*Mobile|FxiOS.*Mobile',
+        'Bolt' => 'bolt',
+        'TeaShark' => 'teashark',
+        'Blazer' => 'Blazer',
         // @reference: http://developer.apple.com/library/safari/#documentation/AppleApplications/Reference/SafariWebContent/OptimizingforSafarioniPhone/OptimizingforSafarioniPhone.html#//apple_ref/doc/uid/TP40006517-SW3
         // Excluded "Edge on iOS" https://github.com/serbanghita/Mobile-Detect/issues/764
-        'Safari'          => 'Version((?!\bEdgiOS\b).)*Mobile.*Safari|Safari.*Mobile|MobileSafari',
+        'Safari' => 'Version((?!\bEdgiOS\b).)*Mobile.*Safari|Safari.*Mobile|MobileSafari',
         // http://en.wikipedia.org/wiki/Midori_(web_browser)
-        //'Midori'          => 'midori',
-        //'Tizen'           => 'Tizen',
-        'WeChat'          => '\bMicroMessenger\b',
-        'UCBrowser'       => 'UC.*Browser|UCWEB',
-        'baiduboxapp'     => 'baiduboxapp',
-        'baidubrowser'    => 'baidubrowser',
+        // 'Midori'          => 'midori',
+        // 'Tizen'           => 'Tizen',
+        'WeChat' => '\bMicroMessenger\b',
+        'UCBrowser' => 'UC.*Browser|UCWEB',
+        'baiduboxapp' => 'baiduboxapp',
+        'baidubrowser' => 'baidubrowser',
         // https://github.com/serbanghita/Mobile-Detect/issues/7
-        'DiigoBrowser'    => 'DiigoBrowser',
+        'DiigoBrowser' => 'DiigoBrowser',
         // http://www.puffinbrowser.com/index.php
         // https://github.com/serbanghita/Mobile-Detect/issues/752
         // 'Puffin'            => 'Puffin',
         // http://mercury-browser.com/index.html
-        'Mercury'          => '\bMercury\b',
+        'Mercury' => '\bMercury\b',
         // http://en.wikipedia.org/wiki/Obigo_Browser
         'ObigoBrowser' => 'Obigo',
         // http://en.wikipedia.org/wiki/NetFront
         'NetFront' => 'NF-Browser',
         // @reference: http://en.wikipedia.org/wiki/Minimo
         // http://en.wikipedia.org/wiki/Vision_Mobile_Browser
-        'GenericBrowser'  => 'NokiaBrowser|OviBrowser|OneBrowser|TwonkyBeamBrowser|SEMC.*Browser|FlyFlow|Minimo|NetFront|Novarra-Vision|MQQBrowser|MicroMessenger',
+        'GenericBrowser' => 'NokiaBrowser|OviBrowser|OneBrowser|TwonkyBeamBrowser|SEMC.*Browser|FlyFlow|Minimo|NetFront|Novarra-Vision|MQQBrowser|MicroMessenger',
         // @reference: https://en.wikipedia.org/wiki/Pale_Moon_(web_browser)
-        'PaleMoon'        => 'Android.*PaleMoon|Mobile.*PaleMoon',
-        'HuaweiBrowser'   => 'HuaweiBrowser',
+        'PaleMoon' => 'Android.*PaleMoon|Mobile.*PaleMoon',
+        'HuaweiBrowser' => 'HuaweiBrowser',
     ];
 
     /**
      * All possible HTTP headers that represent the
      * User-Agent string.
-     * @var array
      */
     protected static array $knownUserAgentHttpHeaders = [
         // The default User-Agent string.
@@ -964,84 +954,83 @@ class MobileDetect
         'HTTP_X_SKYFIRE_PHONE',
         'HTTP_X_BOLT_PHONE_UA',
         'HTTP_DEVICE_STOCK_UA',
-        'HTTP_X_UCBROWSER_DEVICE_UA'
+        'HTTP_X_UCBROWSER_DEVICE_UA',
     ];
 
     /**
      * The individual segments that could exist in a User-Agent string. VER refers to the regular
      * expression defined in the constant self::VERSION_REGEX.
-     * @var array
      */
     protected static array $properties = [
 
         // Build
-        'Mobile'        => 'Mobile/[VER]',
-        'Build'         => 'Build/[VER]',
-        'Version'       => 'Version/[VER]',
-        'VendorID'      => 'VendorID/[VER]',
+        'Mobile' => 'Mobile/[VER]',
+        'Build' => 'Build/[VER]',
+        'Version' => 'Version/[VER]',
+        'VendorID' => 'VendorID/[VER]',
 
         // Devices
-        'iPad'          => 'iPad.*CPU[a-z ]+[VER]',
-        'iPhone'        => 'iPhone.*CPU[a-z ]+[VER]',
-        'iPod'          => 'iPod.*CPU[a-z ]+[VER]',
-        //'BlackBerry'    => array('BlackBerry[VER]', 'BlackBerry [VER];'),
-        'Kindle'        => 'Kindle/[VER]',
+        'iPad' => 'iPad.*CPU[a-z ]+[VER]',
+        'iPhone' => 'iPhone.*CPU[a-z ]+[VER]',
+        'iPod' => 'iPod.*CPU[a-z ]+[VER]',
+        // 'BlackBerry'    => array('BlackBerry[VER]', 'BlackBerry [VER];'),
+        'Kindle' => 'Kindle/[VER]',
 
         // Browser
-        'Chrome'        => ['Chrome/[VER]', 'CriOS/[VER]', 'CrMo/[VER]'],
-        'Coast'         => ['Coast/[VER]'],
-        'Dolfin'        => 'Dolfin/[VER]',
+        'Chrome' => ['Chrome/[VER]', 'CriOS/[VER]', 'CrMo/[VER]'],
+        'Coast' => ['Coast/[VER]'],
+        'Dolfin' => 'Dolfin/[VER]',
         // @reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent/Firefox
-        'Firefox'       => ['Firefox/[VER]', 'FxiOS/[VER]'],
-        'Fennec'        => 'Fennec/[VER]',
+        'Firefox' => ['Firefox/[VER]', 'FxiOS/[VER]'],
+        'Fennec' => 'Fennec/[VER]',
         // http://msdn.microsoft.com/en-us/library/ms537503(v=vs.85).aspx
         // https://msdn.microsoft.com/en-us/library/ie/hh869301(v=vs.85).aspx
         'Edge' => 'Edge/[VER]',
-        'IE'      => ['IEMobile/[VER];', 'IEMobile [VER]', 'MSIE [VER];', 'Trident/[0-9.]+;.*rv:[VER]'],
+        'IE' => ['IEMobile/[VER];', 'IEMobile [VER]', 'MSIE [VER];', 'Trident/[0-9.]+;.*rv:[VER]'],
         // http://en.wikipedia.org/wiki/NetFront
-        'NetFront'      => 'NetFront/[VER]',
-        'NokiaBrowser'  => 'NokiaBrowser/[VER]',
-        'Opera'         => [' OPR/[VER]', 'Opera Mini/[VER]', 'Version/[VER]'],
-        'Opera Mini'    => 'Opera Mini/[VER]',
-        'Opera Mobi'    => 'Version/[VER]',
-        'UCBrowser'    => ['UCWEB[VER]', 'UC.*Browser/[VER]'],
-        'MQQBrowser'    => 'MQQBrowser/[VER]',
+        'NetFront' => 'NetFront/[VER]',
+        'NokiaBrowser' => 'NokiaBrowser/[VER]',
+        'Opera' => [' OPR/[VER]', 'Opera Mini/[VER]', 'Version/[VER]'],
+        'Opera Mini' => 'Opera Mini/[VER]',
+        'Opera Mobi' => 'Version/[VER]',
+        'UCBrowser' => ['UCWEB[VER]', 'UC.*Browser/[VER]'],
+        'MQQBrowser' => 'MQQBrowser/[VER]',
         'MicroMessenger' => 'MicroMessenger/[VER]',
-        'baiduboxapp'   => 'baiduboxapp/[VER]',
-        'baidubrowser'  => 'baidubrowser/[VER]',
+        'baiduboxapp' => 'baiduboxapp/[VER]',
+        'baidubrowser' => 'baidubrowser/[VER]',
         'SamsungBrowser' => 'SamsungBrowser/[VER]',
-        'Iron'          => 'Iron/[VER]',
+        'Iron' => 'Iron/[VER]',
         // @note: Safari 7534.48.3 is actually Version 5.1.
         // @note: On BlackBerry the Version is overwriten by the OS.
-        'Safari'        => ['Version/[VER]', 'Safari/[VER]'],
-        'Skyfire'       => 'Skyfire/[VER]',
-        'Tizen'         => 'Tizen/[VER]',
-        'Webkit'        => 'webkit[ /][VER]',
-        'PaleMoon'         => 'PaleMoon/[VER]',
-        'SailfishBrowser'  => 'SailfishBrowser/[VER]',
+        'Safari' => ['Version/[VER]', 'Safari/[VER]'],
+        'Skyfire' => 'Skyfire/[VER]',
+        'Tizen' => 'Tizen/[VER]',
+        'Webkit' => 'webkit[ /][VER]',
+        'PaleMoon' => 'PaleMoon/[VER]',
+        'SailfishBrowser' => 'SailfishBrowser/[VER]',
 
         // Engine
-        'Gecko'         => 'Gecko/[VER]',
-        'Trident'       => 'Trident/[VER]',
-        'Presto'        => 'Presto/[VER]',
-        'Goanna'           => 'Goanna/[VER]',
+        'Gecko' => 'Gecko/[VER]',
+        'Trident' => 'Trident/[VER]',
+        'Presto' => 'Presto/[VER]',
+        'Goanna' => 'Goanna/[VER]',
 
         // OS
-        'iOS'              => ' \bi?OS\b [VER][ ;]{1}',
-        'Android'          => 'Android [VER]',
-        'Sailfish'         => 'Sailfish [VER]',
-        'BlackBerry'       => ['BlackBerry[\w]+/[VER]', 'BlackBerry.*Version/[VER]', 'Version/[VER]'],
-        'BREW'             => 'BREW [VER]',
-        'Java'             => 'Java/[VER]',
+        'iOS' => ' \bi?OS\b [VER][ ;]{1}',
+        'Android' => 'Android [VER]',
+        'Sailfish' => 'Sailfish [VER]',
+        'BlackBerry' => ['BlackBerry[\w]+/[VER]', 'BlackBerry.*Version/[VER]', 'Version/[VER]'],
+        'BREW' => 'BREW [VER]',
+        'Java' => 'Java/[VER]',
         // @reference: http://windowsteamblog.com/windows_phone/b/wpdev/archive/2011/08/29/introducing-the-ie9-on-windows-phone-mango-user-agent-string.aspx
         // @reference: http://en.wikipedia.org/wiki/Windows_NT#Releases
         'Windows Phone OS' => ['Windows Phone OS [VER]', 'Windows Phone [VER]'],
-        'Windows Phone'    => 'Windows Phone [VER]',
-        'Windows CE'       => 'Windows CE/[VER]',
+        'Windows Phone' => 'Windows Phone [VER]',
+        'Windows CE' => 'Windows CE/[VER]',
         // http://social.msdn.microsoft.com/Forums/en-US/windowsdeveloperpreviewgeneral/thread/6be392da-4d2f-41b4-8354-8dcee20c85cd
-        'Windows NT'       => 'Windows NT [VER]',
-        'Symbian'          => ['SymbianOS/[VER]', 'Symbian/[VER]'],
-        'webOS'            => ['webOS/[VER]', 'hpwOS/[VER];'],
+        'Windows NT' => 'Windows NT [VER]',
+        'Symbian' => ['SymbianOS/[VER]', 'Symbian/[VER]'],
+        'webOS' => ['webOS/[VER]', 'hpwOS/[VER];'],
     ];
 
     /**
@@ -1052,7 +1041,7 @@ class MobileDetect
         array $config = [],
     ) {
         // If no custom cache provided then use our own.
-        $this->cache = $cache ?? new Cache();
+        $this->cache = $cache ?? new Cache;
         // Override config from user.
         $this->config = array_merge($this->config, $config);
 
@@ -1077,8 +1066,6 @@ class MobileDetect
     /**
      * On startup Mobile Detect library will auto-initiate from the existing
      * HTTP headers extracted from $_SERVER.
-     *
-     * @return void
      */
     public function autoInitKnownHttpHeaders(): void
     {
@@ -1105,16 +1092,16 @@ class MobileDetect
 
         // Set the User-Agent even if it's an empty string so that "autoInitOfHttpHeaders" doesn't throw an exception.
         // https://github.com/serbanghita/Mobile-Detect/issues/946#issuecomment-1885675939
-        if (!$this->hasUserAgent()) {
-            $this->setUserAgent("");
+        if (! $this->hasUserAgent()) {
+            $this->setUserAgent('');
         }
     }
 
     /**
      * Set the HTTP Headers. Must be PHP-flavored. This method will reset existing headers.
      *
-     * @param array $httpHeaders The headers to set. If null, then using PHP's _SERVER to extract
-     *                           the headers. The default null is left for backwards compatibility.
+     * @param  array  $httpHeaders  The headers to set. If null, then using PHP's _SERVER to extract
+     *                              the headers. The default null is left for backwards compatibility.
      */
     public function setHttpHeaders(array $httpHeaders = []): void
     {
@@ -1127,14 +1114,14 @@ class MobileDetect
 
         // Setting new HTTP headers automatically resets the User-Agent.
         // Set current User-Agent from known User-Agent-like HTTP header(s).
-        $userAgent = "";
+        $userAgent = '';
         foreach ($this->getUaHttpHeaders() as $altHeader) {
-            if (!empty($this->httpHeaders[$altHeader])) {
-                $userAgent .= $this->httpHeaders[$altHeader] . " ";
+            if (! empty($this->httpHeaders[$altHeader])) {
+                $userAgent .= $this->httpHeaders[$altHeader].' ';
             }
         }
 
-        if (!empty($userAgent)) {
+        if (! empty($userAgent)) {
             $this->setUserAgent($userAgent);
         }
 
@@ -1149,8 +1136,6 @@ class MobileDetect
 
     /**
      * Retrieves the HTTP headers.
-     *
-     * @return array
      */
     public function getHttpHeaders(): array
     {
@@ -1164,31 +1149,30 @@ class MobileDetect
 
     protected function hasHttpHeader(string $name): bool
     {
-        return !empty($this->httpHeaders[$name]);
+        return ! empty($this->httpHeaders[$name]);
     }
 
     /**
      * Retrieves a particular header. If it doesn't exist, no exception/error is caused.
      * Simply null is returned.
      *
-     * @param string $header The name of the header to retrieve. Can be HTTP compliant such as
-     *                       "User-Agent" or "X-Device-User-Agent" or can be php-esque with the
-     *                       all-caps, HTTP_ prefixed, underscore separated awesomeness.
-     *
+     * @param  string  $header  The name of the header to retrieve. Can be HTTP compliant such as
+     *                          "User-Agent" or "X-Device-User-Agent" or can be php-esque with the
+     *                          all-caps, HTTP_ prefixed, underscore separated awesomeness.
      * @return string|null The value of the header.
      */
     public function getHttpHeader(string $header): ?string
     {
         // are we using PHP-flavored headers?
-        if (!str_contains($header, '_')) {
+        if (! str_contains($header, '_')) {
             $header = str_replace('-', '_', $header);
             $header = strtoupper($header);
         }
 
         // test the alternate, too
-        $altHeader = 'HTTP_' . $header;
+        $altHeader = 'HTTP_'.$header;
 
-        //Test both the regular and the HTTP_ prefix
+        // Test both the regular and the HTTP_ prefix
         if (isset($this->httpHeaders[$header])) {
             return $this->httpHeaders[$header];
         } elseif (isset($this->httpHeaders[$altHeader])) {
@@ -1217,8 +1201,6 @@ class MobileDetect
     /**
      * Retrieves the HTTP CloudFront headers
      * that trigger a mobile detection.
-     *
-     * @return array
      */
     public function getCloudFrontHttpHeaders(): array
     {
@@ -1228,24 +1210,24 @@ class MobileDetect
     /**
      * Prepare the User-Agent string for matching phase.
      *
-     * @param string $userAgent The User-Agent string.
-     * @return string
+     * @param  string  $userAgent  The User-Agent string.
      */
     private function prepareUserAgent(string $userAgent): string
     {
         $userAgent = trim($userAgent);
+
         return substr($userAgent, 0, $this->config['maximumUserAgentLength']);
     }
 
     /**
      * Set the User-Agent to be used.
      *
-     * @param string $userAgent The User-Agent string.
-     * @return string
+     * @param  string  $userAgent  The User-Agent string.
      */
     public function setUserAgent(string $userAgent): string
     {
         $preparedUserAgent = $this->prepareUserAgent($userAgent);
+
         return $this->userAgent = $preparedUserAgent;
     }
 
@@ -1313,14 +1295,12 @@ class MobileDetect
      * Method gets the mobile detection rules.
      * This method is used for the magic methods $detect->is*().
      * Retrieve the current set of rules.
-     *
-     * @return array
      */
     public function getRules(): array
     {
         static $rules;
 
-        if (!$rules) {
+        if (! $rules) {
             $rules = array_merge(
                 static::$browsers,
                 static::$operatingSystems,
@@ -1346,8 +1326,6 @@ class MobileDetect
      * Check the HTTP headers for signs of mobile.
      * This is the fastest mobile check possible; it's used
      * inside isMobile() method.
-     *
-     * @return bool
      */
     public function checkHttpHeadersForMobile(): bool
     {
@@ -1373,16 +1351,15 @@ class MobileDetect
     /**
      * Magic overloading method.
      *
-     * @param string $name
-     * @param array $arguments
      * @return bool
+     *
      * @throws BadMethodCallException when the method doesn't exist and doesn't start with 'is'
      * @throws \Exception
      */
     public function __call(string $name, array $arguments)
     {
         // make sure the name starts with 'is', otherwise
-        if (!str_starts_with($name, 'is')) {
+        if (! str_starts_with($name, 'is')) {
             throw new BadMethodCallException("No such method exists: $name");
         }
 
@@ -1394,12 +1371,12 @@ class MobileDetect
     /**
      * Check if the device is mobile.
      * Returns true if any type of mobile device detected, including special ones
-     * @return bool
+     *
      * @throws MobileDetectException
      */
     public function isMobile(): bool
     {
-        if (!$this->hasUserAgent()) {
+        if (! $this->hasUserAgent()) {
             throw new MobileDetectException('No valid user-agent has been set.', MobileDetectExceptionCode::INVALID_USER_AGENT_ERR);
         }
 
@@ -1409,7 +1386,7 @@ class MobileDetect
 
         // Cache check.
         try {
-            $cacheKey = $this->createCacheKey("mobile");
+            $cacheKey = $this->createCacheKey('mobile');
             $cacheItem = $this->cache->get($cacheKey);
             if ($cacheItem !== null) {
                 return $cacheItem;
@@ -1421,18 +1398,21 @@ class MobileDetect
                 $this->getHttpHeader('HTTP_CLOUDFRONT_IS_MOBILE_VIEWER') === 'true'
             ) {
                 $this->cache->set($cacheKey, true, $this->config['cacheTtl']);
+
                 return true;
             }
 
             if ($this->hasHttpHeaders() && $this->checkHttpHeadersForMobile()) {
                 $this->cache->set($cacheKey, true, $this->config['cacheTtl']);
+
                 return true;
             } else {
                 $result = $this->matchUserAgentWithFirstFoundMatchingRule();
                 $this->cache->set($cacheKey, $result, $this->config['cacheTtl']);
+
                 return $result;
             }
-        } catch (CacheInvalidArgumentException | CacheException | PsrInvalidArgumentException $e) {
+        } catch (CacheInvalidArgumentException|CacheException|PsrInvalidArgumentException $e) {
             throw new MobileDetectException("Cache problem in isMobile(): {$e->getMessage()}", MobileDetectExceptionCode::IS_MOBILE_ERR, $e);
         }
     }
@@ -1440,12 +1420,12 @@ class MobileDetect
     /**
      * Check if the device is a tablet.
      * Return true if any type of tablet device is detected.
-     * @return bool
+     *
      * @throws MobileDetectException
      */
     public function isTablet(): bool
     {
-        if (!$this->hasUserAgent()) {
+        if (! $this->hasUserAgent()) {
             throw new MobileDetectException('No user-agent has been set.', MobileDetectExceptionCode::INVALID_USER_AGENT_ERR);
         }
 
@@ -1455,7 +1435,7 @@ class MobileDetect
 
         // Cache check.
         try {
-            $cacheKey = $this->createCacheKey("tablet");
+            $cacheKey = $this->createCacheKey('tablet');
             $cacheItem = $this->cache->get($cacheKey);
             if ($cacheItem !== null) {
                 return $cacheItem;
@@ -1467,6 +1447,7 @@ class MobileDetect
                 $this->getHttpHeader('HTTP_CLOUDFRONT_IS_TABLET_VIEWER') === 'true'
             ) {
                 $this->cache->set($cacheKey, true, $this->config['cacheTtl']);
+
                 return true;
             }
 
@@ -1474,10 +1455,11 @@ class MobileDetect
                 $regexString = $_regex;
                 // "regex" is array of "strings"
                 if (is_array($_regex)) {
-                    $regexString = implode("|", $_regex);
+                    $regexString = implode('|', $_regex);
                 }
                 if ($this->match($regexString, $this->getUserAgent())) {
                     $this->cache->set($cacheKey, true, $this->config['cacheTtl']);
+
                     return true;
                 }
 
@@ -1499,8 +1481,9 @@ class MobileDetect
             }
 
             $this->cache->set($cacheKey, false, $this->config['cacheTtl']);
+
             return false;
-        } catch (CacheInvalidArgumentException | CacheException | PsrInvalidArgumentException $e) {
+        } catch (CacheInvalidArgumentException|CacheException|PsrInvalidArgumentException $e) {
             throw new MobileDetectException("Cache problem in isTablet(): {$e->getMessage()}", MobileDetectExceptionCode::IS_TABLET_ERR, $e);
         }
     }
@@ -1508,13 +1491,11 @@ class MobileDetect
     /**
      * Checks if a rule (e.g. isIphone, isIOS, etc.) matches its regex against the User-Agent.
      *
-     * @param string $ruleName
-     * @return bool
      * @throws MobileDetectException
      */
     public function is(string $ruleName): bool
     {
-        if (!$this->hasUserAgent()) {
+        if (! $this->hasUserAgent()) {
             throw new MobileDetectException('No user-agent has been set.', MobileDetectExceptionCode::INVALID_USER_AGENT_ERR);
         }
 
@@ -1534,8 +1515,9 @@ class MobileDetect
 
             // Cache save.
             $this->cache->set($cacheKey, $result, $this->config['cacheTtl']);
+
             return $result;
-        } catch (CacheInvalidArgumentException | CacheException | PsrInvalidArgumentException $e) {
+        } catch (CacheInvalidArgumentException|CacheException|PsrInvalidArgumentException $e) {
             throw new MobileDetectException("Cache problem in is(): {$e->getMessage()}", MobileDetectExceptionCode::IS_MAGIC_ERR, $e);
         }
     }
@@ -1549,9 +1531,6 @@ class MobileDetect
      * This method will be used to check custom regexes against
      * the User-Agent string.
      *
-     * @param string $regex
-     * @param string $userAgent
-     * @return bool
      *
      * @todo: search in the HTTP headers too.
      */
@@ -1569,7 +1548,6 @@ class MobileDetect
 
     /**
      * Find a detection rule that matches the current User-agent.
-     * @return bool
      */
     protected function matchUserAgentWithFirstFoundMatchingRule(): bool
     {
@@ -1601,9 +1579,6 @@ class MobileDetect
      * Search for a certain key in the rules array.
      * If the key is found then try to match the corresponding
      * regex against the User-Agent.
-     *
-     * @param string $ruleName
-     * @return bool
      */
     protected function matchUserAgentWithRule(string $ruleName): bool
     {
@@ -1613,10 +1588,10 @@ class MobileDetect
         // change the keys to lower case
         $_rules = array_change_key_case($this->getRules());
 
-        if (false === empty($_rules[$ruleName])) {
+        if (empty($_rules[$ruleName]) === false) {
             $regexString = $_rules[$ruleName];
             if (is_array($_rules[$ruleName])) {
-                $regexString = implode("|", $_rules[$ruleName]);
+                $regexString = implode('|', $_rules[$ruleName]);
             }
             $result = $this->match($regexString, $this->getUserAgent());
             //            if (is_array($_rules[$ruleName])) {
@@ -1636,10 +1611,10 @@ class MobileDetect
 
     /**
      * Prepare the version number.
+     *
      * @todo Remove the error suppression from str_replace() call.
      *
-     * @param string $ver The string version, like "2.6.21.2152";
-     * @return float
+     * @param  string  $ver  The string version, like "2.6.21.2152";
      */
     public function prepareVersionNo(string $ver): float
     {
@@ -1657,18 +1632,17 @@ class MobileDetect
      * Check the version of the given property in the User-Agent.
      * Will return a float number. (e.g. 2_0 will return 2.0, 4.3.1 will return 4.31)
      *
-     * @param string $propertyName The name of the property. See self::getProperties() array
-     *                             keys for all possible properties.
-     * @param string $type         Either self::VERSION_TYPE_STRING to get a string value or
-     *                             self::VERSION_TYPE_FLOAT indicating a float value. This parameter
-     *                             is optional and defaults to self::VERSION_TYPE_STRING. Passing an
-     *                             invalid parameter will default to the type as well.
-     *
+     * @param  string  $propertyName  The name of the property. See self::getProperties() array
+     *                                keys for all possible properties.
+     * @param  string  $type  Either self::VERSION_TYPE_STRING to get a string value or
+     *                        self::VERSION_TYPE_FLOAT indicating a float value. This parameter
+     *                        is optional and defaults to self::VERSION_TYPE_STRING. Passing an
+     *                        invalid parameter will default to the type as well.
      * @return string|float|false The version of the property we are trying to extract.
      */
     public function version(string $propertyName, string $type = self::VERSION_TYPE_STRING): float|bool|string
     {
-        if (empty($propertyName) || !$this->hasUserAgent()) {
+        if (empty($propertyName) || ! $this->hasUserAgent()) {
             return false;
         }
 
@@ -1680,7 +1654,7 @@ class MobileDetect
         $properties = self::getProperties();
 
         // Check if the property exists in the properties array.
-        if (true === isset($properties[$propertyName])) {
+        if (isset($properties[$propertyName]) === true) {
             // Prepare the pattern to be matched.
             // Make sure we always deal with an array (string is converted).
             $properties[$propertyName] = (array) $properties[$propertyName];
@@ -1691,8 +1665,8 @@ class MobileDetect
                 // Identify and extract the version.
                 preg_match(sprintf('#%s#is', $propertyPattern), $this->userAgent, $match);
 
-                if (false === empty($match[1])) {
-                    return ($type == self::VERSION_TYPE_FLOAT ? $this->prepareVersionNo($match[1]) : $match[1]);
+                if (empty($match[1]) === false) {
+                    return $type == self::VERSION_TYPE_FLOAT ? $this->prepareVersionNo($match[1]) : $match[1];
                 }
             }
         }
@@ -1720,7 +1694,7 @@ class MobileDetect
 
         $cacheKeyFn = $this->config['cacheKeyFn'];
 
-        if (!is_callable($cacheKeyFn)) {
+        if (! is_callable($cacheKeyFn)) {
             throw new CacheException('cacheKeyFn is not a function.');
         }
 
@@ -1731,15 +1705,14 @@ class MobileDetect
     {
         $key = '';
         foreach ($httpHeaders as $name => $value) {
-            $key .= "$name: $value" . PHP_EOL;
+            $key .= "$name: $value".PHP_EOL;
         }
+
         return trim($key);
     }
 
     /**
      * Get the properties array.
-     *
-     * @return array
      */
     public static function getProperties(): array
     {

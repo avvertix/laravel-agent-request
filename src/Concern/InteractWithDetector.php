@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Avvertix\AgentRequest\LaravelAgentRequest\Concern;
@@ -15,13 +16,13 @@ trait InteractWithDetector
     {
         return $this->detector ??= self::getDetectorClass()::fromRequest($request ?? $this);
     }
-    
+
     public static function getDetectorClass(): string
     {
-        $actionClass = config("agent-request.detector");
+        $actionClass = config('agent-request.detector');
 
         if (blank($actionClass)) {
-            throw new InvalidArgumentException("No detector class specified in agent-request configuration.");
+            throw new InvalidArgumentException('No detector class specified in agent-request configuration.');
         }
 
         if (! class_exists($actionClass)) {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Avvertix\AgentRequest\LaravelAgentRequest\Http\Middleware;
 
-use Avvertix\AgentRequest\LaravelAgentRequest\Actions\DetectAgent;
 use Avvertix\AgentRequest\LaravelAgentRequest\Concern\InteractWithDetector;
 use Closure;
 use Illuminate\Http\Request;
@@ -23,7 +22,7 @@ class TraceAgentMiddleware
 
         $detectAgent = $this->detector($request);
 
-        if($detectAgent->isAgent()){
+        if ($detectAgent->isAgent()) {
             Context::add([
                 'agent_name' => $detectAgent->agentName(),
                 'agent_type' => $detectAgent->detect(),

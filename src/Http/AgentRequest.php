@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Avvertix\AgentRequest\LaravelAgentRequest\Http;
 
-use Avvertix\AgentRequest\LaravelAgentRequest\Actions\DetectAgent;
 use Avvertix\AgentRequest\LaravelAgentRequest\Concern\InteractWithDetector;
 use Avvertix\AgentRequest\LaravelAgentRequest\Enums\AgentType;
 use Illuminate\Http\Request;

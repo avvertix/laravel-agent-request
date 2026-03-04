@@ -5,7 +5,6 @@ namespace Avvertix\AgentRequest\LaravelAgentRequest;
 use Avvertix\AgentRequest\LaravelAgentRequest\Actions\DetectAgent;
 use Avvertix\AgentRequest\LaravelAgentRequest\Commands\GenerateRobotsTxtCommand;
 use Avvertix\AgentRequest\LaravelAgentRequest\Http\AgentRequest;
-use Avvertix\AgentRequest\LaravelAgentRequest\Http\Middleware\DenyAgentMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Spatie\LaravelPackageTools\Package;
