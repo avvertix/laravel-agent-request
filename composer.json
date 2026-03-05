@@ -65,11 +65,8 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
-            ],
-            "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
-            }
+                "Avvertix\\AgentRequest\\LaravelAgentRequest\\LaravelAgentRequestServiceProvider"
+            ]
         }
     },
     "minimum-stability": "dev",
